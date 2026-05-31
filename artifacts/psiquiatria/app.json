@@ -1,0 +1,80 @@
+{
+  "expo": {
+    "name": "MIAR APPS",
+    "slug": "psiquiatria",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/images/icon.png",
+    "scheme": "psiquiatria",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "updates": {
+      "enabled": false
+    },
+    "splash": {
+      "image": "./assets/images/icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#F4F8FB"
+    },
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.mi4r4pps.psiquiatria",
+      "infoPlist": {
+        "NSMicrophoneUsageDescription": "A MIAR APPS precisa do microfone para gravar suas perguntas por voz.",
+        "NSSpeechRecognitionUsageDescription": "A MIAR APPS usa reconhecimento de voz para transcrever suas perguntas."
+      }
+    },
+    "android": {
+      "package": "com.mi4r4pps.psiquiatria",
+      "versionCode": 3,
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/images/icon.png",
+        "backgroundColor": "#0D7E97"
+      },
+      "permissions": [
+        "android.permission.RECORD_AUDIO",
+        "android.permission.INTERNET",
+        "android.permission.VIBRATE",
+        "android.permission.MODIFY_AUDIO_SETTINGS"
+      ]
+    },
+    "web": {
+      "favicon": "./assets/images/icon.png"
+    },
+    "plugins": [
+      [
+        "expo-router",
+        {
+          "origin": "https://replit.com/"
+        }
+      ],
+      "expo-font",
+      "expo-web-browser",
+      "expo-secure-store",
+      [
+        "expo-av",
+        {
+          "microphonePermission": "A MIAR APPS precisa do microfone para gravar suas perguntas por voz."
+        }
+      ],
+      "expo-audio",
+      [
+        "expo-local-authentication",
+        {
+          "faceIDPermission": "A MIAR APPS usa Face ID/digital pra desbloquear o app rapidamente."
+        }
+      ],
+      "expo-localization"
+    ],
+    "experiments": {
+      "typedRoutes": true,
+      "reactCompiler": true
+    },
+    "extra": {
+      "eas": {
+        "projectId": "ab1a3f9b-7f8b-4f81-92ab-4db42b25a925"
+      }
+    },
+    "owner": "miarzinha"
+  }
+}

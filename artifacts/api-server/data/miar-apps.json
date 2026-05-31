@@ -1,0 +1,38 @@
+{
+  "apps": [
+    {
+      "id": "app_mpcofsqn_grh1b",
+      "name": "Lista do Mercado",
+      "emoji": "🛒",
+      "description": "Lista de compras para o mercado",
+      "spec": {
+        "type": "todo",
+        "config": {
+          "title": "Lista do Mercado",
+          "initialItems": [
+            "Pão",
+            "Leite",
+            "Ovos"
+          ]
+        }
+      },
+      "createdAt": 1779197810495
+    },
+    {
+      "name": "Contador de Copos de Água",
+      "emoji": "💧",
+      "description": "Conta quantos copos de água você já bebeu hoje.",
+      "spec": {
+        "type": "counter",
+        "config": {
+          "title": "Copos de Água",
+          "label": "copos",
+          "start": 0,
+          "step": 1
+        }
+      },
+      "id": "app_mpcoj3zs_igmdd",
+      "createdAt": 1779197965048
+    }
+  ]
+}

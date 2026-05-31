@@ -1,0 +1,14 @@
+{
+  "expo": {
+    "extra": {
+      "eas": {
+        "projectId": "f141389f-5c55-4473-bc89-515b426c2dfe"
+      }
+    },
+    "slug": "workspace",
+    "android": {
+      "package": "com.miar_maktub.workspace"
+    },
+    "owner": "grupo-miar-maktub"
+  }
+}

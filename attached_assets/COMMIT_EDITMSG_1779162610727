@@ -1,0 +1,10 @@
+Improve app startup by removing welcome overlay logic
+
+Remove conditional rendering of WelcomeOverlay to ensure it is displayed if not hidden.
+
+Replit-Commit-Author: Agent
+Replit-Commit-Session-Id: e1ae1037-9d3f-4f3d-936c-b81c465ee556
+Replit-Commit-Checkpoint-Type: full_checkpoint
+Replit-Commit-Event-Id: 498883f9-75a5-4cb6-a8a6-7bc3fb66c5be
+Replit-Commit-Screenshot-Url: https://storage.googleapis.com/screenshot-production-us-central1/f4db4fc8-591c-4fca-aee2-e0322d2d2821/e1ae1037-9d3f-4f3d-936c-b81c465ee556/18My0li
+Replit-Helium-Checkpoint-Created: true
