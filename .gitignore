@@ -47,3 +47,9 @@ Thumbs.db
 # Replit
 .cache/
 .local/
+
+# MIAR AI (miar-ai/) — dados locais, nunca versionados
+miar-ai/db.json
+miar-ai/server.log
+miar-ai/uploads/*
+!miar-ai/uploads/.gitkeep

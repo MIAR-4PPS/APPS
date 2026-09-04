@@ -1,0 +1,2 @@
+Este arquivo é um exemplo de componente que a própria IA pode reescrever
+quando você pedir "mude a nota de boas-vindas" ou algo do tipo.

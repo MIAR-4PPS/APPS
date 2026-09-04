@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>MIAR AI</title>
+<link rel="manifest" href="manifest.webmanifest" />
+<meta name="theme-color" content="#2e7d32" />
+<style>
+:root[data-theme="light"]{
+  --bg:#f4faf5; --panel:#ffffff; --text:#1c2a1f; --primary:#43a047; --primary-dark:#2e7d32;
+  --border:#dcecdd; --bubble-user:#2e7d32; --bubble-ai:#e8f5e9; --muted:#6b7d6d;
+}
+:root[data-theme="dark"]{
+  --bg:#0f1a10; --panel:#16241a; --text:#e6f0e7; --primary:#66bb6a; --primary-dark:#43a047;
+  --border:#20321f; --bubble-user:#2e7d32; --bubble-ai:#1e2f21; --muted:#93a794;
+}
+*{box-sizing:border-box;}
+body{margin:0;font-family:-apple-system,Segoe UI,Roboto,sans-serif;background:var(--bg);color:var(--text);height:100vh;overflow:hidden;}
+#app{display:flex;flex-direction:column;height:100vh;position:relative;}
+
+header{display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--panel);border-bottom:1px solid var(--border);z-index:5;}
+#menuBtn,#settingsBtn{background:none;border:none;color:var(--primary-dark);font-size:22px;cursor:pointer;padding:4px 8px;border-radius:8px;}
+#menuBtn:hover,#settingsBtn:hover{background:var(--border);}
+header h1{font-size:16px;margin:0;flex:1;font-weight:700;color:var(--primary-dark);}
+#storyLabel{font-size:12px;color:var(--muted);}
+#themeToggle{background:none;border:1px solid var(--border);border-radius:20px;padding:4px 10px;font-size:12px;cursor:pointer;color:var(--text);}
+
+#overlay{position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:10;opacity:0;pointer-events:none;transition:opacity .2s;}
+#overlay.open{opacity:1;pointer-events:auto;}
+
+#drawer{position:fixed;top:0;left:0;bottom:0;width:290px;background:var(--panel);z-index:11;transform:translateX(-100%);transition:transform .25s ease;display:flex;flex-direction:column;border-right:1px solid var(--border);}
+#drawer.open{transform:translateX(0);}
+#drawer .drawer-header{padding:16px;border-bottom:1px solid var(--border);}
+#storyList{list-style:none;margin:0;padding:8px;flex:1;overflow-y:auto;}
+#storyList li{padding:10px 12px;border-radius:10px;cursor:pointer;margin-bottom:4px;display:flex;align-items:center;gap:8px;}
+#storyList li .dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+#storyList li:hover{background:var(--border);}
+#storyList li.active{background:var(--primary);color:#fff;}
+#storyList li .del{margin-left:auto;opacity:.5;padding:2px 6px;border-radius:6px;}
+#storyList li .del:hover{opacity:1;background:rgba(0,0,0,.2);}
+#newStoryBtn{margin:8px;padding:10px;border:2px dashed var(--primary);background:transparent;color:var(--primary-dark);border-radius:10px;cursor:pointer;font-weight:600;}
+#readAllStoriesToggle{margin:0 8px 8px;font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px;}
+
+/* Settings drawer (direita) */
+#settingsDrawer{position:fixed;top:0;right:0;bottom:0;width:340px;background:var(--panel);z-index:11;transform:translateX(100%);transition:transform .25s ease;display:flex;flex-direction:column;border-left:1px solid var(--border);overflow-y:auto;padding:16px;}
+#settingsDrawer.open{transform:translateX(0);}
+#settingsDrawer h2{font-size:15px;margin:0 0 10px;}
+.provider-row{border:1px solid var(--border);border-radius:10px;padding:10px;margin-bottom:8px;font-size:13px;}
+.provider-row .top{display:flex;justify-content:space-between;align-items:center;gap:6px;}
+.provider-row input{width:100%;padding:6px 8px;margin-top:6px;border:1px solid var(--border);border-radius:6px;background:var(--bg);color:var(--text);font-size:12px;}
+.provider-row button{font-size:11px;padding:3px 8px;border-radius:6px;border:1px solid var(--border);background:var(--bg);color:var(--text);cursor:pointer;}
+#addProviderForm{border-top:1px solid var(--border);margin-top:10px;padding-top:10px;}
+#addProviderForm select,#addProviderForm input{width:100%;margin-bottom:6px;padding:8px;border:1px solid var(--border);border-radius:6px;background:var(--bg);color:var(--text);}
+#memorySection{margin-top:20px;}
+.mem-item{display:flex;justify-content:space-between;gap:6px;font-size:12px;padding:6px 0;border-bottom:1px solid var(--border);}
+#memWarning{background:#fff3cd;color:#7a5c00;padding:6px;border-radius:6px;font-size:11px;margin-bottom:8px;display:none;}
+
+main{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px;}
+.msg{max-width:75%;padding:10px 14px;border-radius:14px;line-height:1.4;font-size:14.5px;white-space:pre-wrap;position:relative;}
+.msg.user{align-self:flex-end;background:var(--bubble-user);color:white;border-bottom-right-radius:4px;}
+.msg.assistant{align-self:flex-start;background:var(--bubble-ai);color:var(--text);border-bottom-left-radius:4px;}
+.msg.system{align-self:center;background:#fff3cd;color:#7a5c00;font-size:13px;padding:8px 12px;}
+.msg .meta{display:flex;gap:8px;align-items:center;margin-top:6px;font-size:10px;opacity:.7;}
+.msg .meta .copyBtn{cursor:pointer;}
+.msg .meta .time{cursor:default;}
+.empty-state{margin:auto;text-align:center;color:var(--muted);padding:24px;}
+
+footer{padding:12px 16px;background:var(--panel);border-top:1px solid var(--border);display:flex;gap:8px;align-items:flex-end;position:relative;}
+#msgInput{flex:1;resize:none;border:1px solid var(--border);border-radius:14px;padding:10px 40px 10px 14px;font-size:14.5px;font-family:inherit;max-height:160px;min-height:42px;line-height:1.4;background:var(--bg);color:var(--text);}
+.iconBtn{background:var(--primary);color:white;border:none;border-radius:50%;width:42px;height:42px;font-size:16px;cursor:pointer;flex-shrink:0;}
+.iconBtn.secondary{background:var(--panel);color:var(--primary-dark);border:1px solid var(--border);}
+.iconBtn:disabled{opacity:.4;cursor:not-allowed;}
+
+#apiWarning{background:#fff3cd;color:#7a5c00;font-size:12.5px;padding:6px 16px;text-align:center;display:none;}
+
+/* botão flutuante arrastável: "ler todas as conversas" */
+.floatBtn{position:fixed;z-index:20;background:var(--primary-dark);color:#fff;border:none;border-radius:50%;width:46px;height:46px;font-size:18px;cursor:grab;box-shadow:0 3px 10px rgba(0,0,0,.3);}
+.floatBtn:active{cursor:grabbing;}
+</style>
+</head>
+<body>
+<div id="app">
+  <header>
+    <button id="menuBtn" aria-label="Menu">☰</button>
+    <div>
+      <h1>MIAR AI</h1>
+      <div id="storyLabel">Selecione uma história</div>
+    </div>
+    <button id="themeToggle">🌓 tema</button>
+    <button id="settingsBtn" aria-label="Configurações">⚙️</button>
+  </header>
+
+  <div id="apiWarning">Nenhum provider de IA configurado ainda. Abra ⚙️ Configurações e adicione uma chave (Groq, Gemini, Mistral ou OpenRouter).</div>
+
+  <main id="chatArea">
+    <div class="empty-state">Abra o menu ☰ e escolha ou crie uma história para começar.</div>
+  </main>
+
+  <footer>
+    <textarea id="msgInput" placeholder="Escreva ou fale..." rows="1" disabled></textarea>
+    <button id="micBtn" class="iconBtn secondary" title="Falar (auto-envia após 3s de silêncio)">🎤</button>
+    <button id="ttsBtn" class="iconBtn secondary" title="Ler última resposta em voz" style="display:none">🔊</button>
+    <button id="camBtn" class="iconBtn secondary" title="Câmera">📷</button>
+    <button id="attachBtn" class="iconBtn secondary" title="Anexar arquivo">＋</button>
+    <input type="file" id="fileInput" style="display:none" />
+    <button id="sendBtn" class="iconBtn" disabled>➤</button>
+  </footer>
+</div>
+
+<div id="overlay"></div>
+
+<div id="drawer">
+  <div class="drawer-header"><strong>Histórias</strong></div>
+  <ul id="storyList"></ul>
+  <label id="readAllStoriesToggle"><input type="checkbox" id="fullContextCheckbox" /> IA lê toda a história antes de responder</label>
+  <label id="readAllStoriesToggle"><input type="checkbox" id="selfEditCheckbox" /> Permitir autoedição de componentes</label>
+  <button id="newStoryBtn">+ Nova história</button>
+</div>
+
+<div id="settingsDrawer">
+  <h2>Providers de IA</h2>
+  <div id="providerList"></div>
+  <form id="addProviderForm">
+    <select id="newProviderName">
+      <option value="groq">Groq</option>
+      <option value="gemini">Gemini</option>
+      <option value="mistral">Mistral</option>
+      <option value="openrouter">OpenRouter</option>
+    </select>
+    <input id="newProviderLabel" placeholder="Apelido (opcional)" />
+    <input id="newProviderModel" placeholder="Modelo (opcional, usa padrão se vazio)" />
+    <input id="newProviderKey" type="password" placeholder="Cole a API key aqui" />
+    <button type="submit" class="iconBtn secondary" style="width:100%;border-radius:8px;">Salvar provider</button>
+  </form>
+
+  <div id="memorySection">
+    <h2>Memória infinita</h2>
+    <div id="memWarning">Memória com muitos fatos — considere revisar e apagar o que não precisa mais.</div>
+    <div id="memoryList"></div>
+    <button id="clearMemoryBtn" class="iconBtn secondary" style="width:100%;border-radius:8px;margin-top:8px;">Apagar toda a memória</button>
+  </div>
+</div>
+
+<button id="readAllFloatBtn" class="floatBtn" title="Enviar toda a conversa pra IA reler" style="bottom:120px;right:16px;">🧠</button>
+
+<script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,10 @@
+{
+  "name": "MIAR AI",
+  "image": "mcr.microsoft.com/devcontainers/javascript-node:20",
+  "forwardPorts": [4000],
+  "portsAttributes": {
+    "4000": { "label": "MIAR AI", "onAutoForward": "openPreview" }
+  },
+  "postCreateCommand": "cd miar-ai && npm install",
+  "postStartCommand": "bash -c 'cd miar-ai && (nohup npm start > server.log 2>&1 &) ' "
+}
