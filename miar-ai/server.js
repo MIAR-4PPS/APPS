@@ -27,23 +27,43 @@ const ENV_PROVIDER_MAP = [
   { name: 'openrouter', env: 'OPENROUTER_API_KEY' },
 ];
 
+// Um secret do Codespaces pode conter várias chaves juntas (uma por linha,
+// ou separadas por vírgula/espaço) — cada uma vira um provider independente.
+function splitKeys(raw) {
+  return raw
+    .split(/[\s,;]+/)
+    .map(k => k.trim())
+    .filter(k => k.length >= 10);
+}
+
 function seedProvidersFromEnv(db) {
   let changed = false;
+
+  // Limpa qualquer provider salvo anteriormente com chave inválida (mais de
+  // um valor colado junto, com espaço/quebra de linha dentro) — resquício
+  // de uma versão anterior que não separava as chaves do secret.
+  const before = db.providers.length;
+  db.providers = db.providers.filter(p => !p.apiKey || !/\s/.test(p.apiKey));
+  if (db.providers.length !== before) changed = true;
+
   for (const { name, env } of ENV_PROVIDER_MAP) {
-    const key = process.env[env];
-    if (!key) continue;
-    const already = db.providers.find(p => p.name === name && p.apiKey === key);
-    if (already) continue;
-    db.providers.push({
-      id: crypto.randomUUID(),
-      name,
-      label: `${name} (secrets)`,
-      apiKey: key,
-      model: '',
-      enabled: true,
-      createdAt: Date.now(),
+    const raw = process.env[env];
+    if (!raw) continue;
+    const keys = splitKeys(raw);
+    keys.forEach((key, idx) => {
+      const already = db.providers.find(p => p.name === name && p.apiKey === key);
+      if (already) return;
+      db.providers.push({
+        id: crypto.randomUUID(),
+        name,
+        label: keys.length > 1 ? `${name} #${idx + 1} (secrets)` : `${name} (secrets)`,
+        apiKey: key,
+        model: '',
+        enabled: idx === 0 && !db.providers.some(p => p.name === name && p.enabled),
+        createdAt: Date.now(),
+      });
+      changed = true;
     });
-    changed = true;
   }
   return changed;
 }
